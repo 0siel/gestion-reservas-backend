@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  oracle-db:
+    image: gvenzl/oracle-free:latest
+    container_name: hotel-oracle-db
+    ports:
+      - "1521:1521"
+    environment:
+      # Usamos la sintaxis ${VARIABLE} para inyectar los valores del .env
+      - ORACLE_PASSWORD=${ORACLE_ROOT_PASSWORD}
+    volumes:
+      - ./init-db:/container-entrypoint-initdb.d
+    restart: always
+
+# Nota: Tus microservicios también podrán usar estas variables 
+# cuando los agregues a este archivo más adelante.
