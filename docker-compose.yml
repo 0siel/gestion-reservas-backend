@@ -12,6 +12,3 @@ services:
     volumes:
       - ./init-db:/container-entrypoint-initdb.d
     restart: always
-
-# Nota: Tus microservicios también podrán usar estas variables 
-# cuando los agregues a este archivo más adelante.
