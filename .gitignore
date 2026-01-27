@@ -8,3 +8,4 @@
 target/
 *.class
 .mvn/
+/.metadata/

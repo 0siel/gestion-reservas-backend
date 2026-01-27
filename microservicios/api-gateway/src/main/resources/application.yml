@@ -34,6 +34,20 @@ spring:
             - Path=/api/citas/**
           filters:
             - StripPrefix=2
+
+        - id: msv-huespedes
+          uri: lb://msv-huespedes
+          predicates:
+            - Path=/api/huespedes/**
+          filters:
+            - StripPrefix=2
+
+        - id: msv.habitaciones
+          uri: lb://msv.habitaciones
+          predicates:
+            - Path=/api/habitaciones/**
+          filters:
+            - StripPrefix=2
 server:
   port: 8090
 eureka:
