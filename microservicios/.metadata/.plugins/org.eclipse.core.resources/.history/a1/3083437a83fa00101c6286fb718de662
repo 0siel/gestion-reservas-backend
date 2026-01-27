@@ -1,0 +1,5 @@
+package msv_huespedes.repositories;
+
+public interface HuespedRepository {
+
+}

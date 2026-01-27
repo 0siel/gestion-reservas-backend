@@ -1,0 +1,5 @@
+package com.osiel.auth.mappers;
+
+public class UsuarioMapper {
+
+}

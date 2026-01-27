@@ -1,0 +1,6 @@
+package com.osiel.medicos.enums;
+
+public enum EstadoRegistro {
+	ACTIVO,
+	ELIMINADO
+}

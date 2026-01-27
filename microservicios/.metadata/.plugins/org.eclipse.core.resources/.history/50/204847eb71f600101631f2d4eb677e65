@@ -1,0 +1,13 @@
+package com.osiel.medicos.services;
+
+import java.util.List;
+
+import com.example.demo.services.CrudService;
+import com.osiel.medicos.dtos.MedicoRequest;
+import com.osiel.medicos.dtos.MedicoResponse;
+
+public interface MedicoService extends CrudService<MedicoRequest, MedicoResponse>  {
+
+	
+
+}

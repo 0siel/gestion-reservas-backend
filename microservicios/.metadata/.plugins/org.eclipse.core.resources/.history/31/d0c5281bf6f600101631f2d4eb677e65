@@ -1,0 +1,9 @@
+package ms_pacientes.services;
+
+import com.example.demo.dto.PacienteRequest;
+import com.example.demo.dto.PacienteResponse;
+import com.example.demo.services.CrudService;
+
+public interface PacienteService extends CrudService<PacienteRequest, PacienteResponse> {
+
+}

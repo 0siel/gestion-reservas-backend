@@ -1,0 +1,11 @@
+package ms_pacientes.repositories;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import ms_pacientes.pacientes.entities.Paciente;
+
+
+
+public interface PacienteRepository extends JpaRepository<Paciente, Long> {
+
+}

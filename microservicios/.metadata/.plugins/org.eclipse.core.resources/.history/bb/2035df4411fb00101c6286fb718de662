@@ -1,0 +1,5 @@
+package msv_reservas.entities;
+
+public class Reserva {
+
+}

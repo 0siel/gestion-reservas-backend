@@ -1,0 +1,5 @@
+package msv_huespedes.services;
+
+public class HuespedServiceImpl {
+
+}

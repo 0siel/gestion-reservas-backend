@@ -1,0 +1,62 @@
+package com.example.demo.services;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import org.springframework.stereotype.Service;
+
+import com.example.demo.dtos.PacienteRequest;
+import com.example.demo.dtos.PacienteResponse;
+import com.example.demo.mappers.PacienteMapper;
+import com.example.demo.pacientes.entities.Paciente;
+import com.example.demo.repositories.PacienteRepository;
+
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+
+@Service
+@Transactional
+@AllArgsConstructor
+public class PacienteServiceImpl implements PacienteService {
+	private final PacienteRepository pacienteRepository;
+	private final PacienteMapper pacienteMapper;
+	
+	
+
+	@Override
+	public List<PacienteResponse> listar() {
+		// TODO Auto-generated method stub
+		return pacienteRepository.findAll().stream().map(pacienteMapper::entityToResponse).toList();
+	}
+
+	@Override
+	public PacienteResponse obtenerPorId(Long id) {
+		// TODO Auto-generated method stub
+		return pacienteMapper.entityToResponse(getPacienteOrThrow(id));
+	}
+
+	@Override
+	public PacienteResponse registrar(PacienteRequest request) {
+		
+		Paciente pacienteToSave = pacienteMapper.requestToEntity(request);
+		return pacienteMapper.entityToResponse(pacienteRepository.save(pacienteToSave));
+	}
+
+	@Override
+	public PacienteResponse actualizar(PacienteRequest request, Long id) {
+		Paciente pacienteToUpdate = getPacienteOrThrow(id);
+		Paciente pacienteUpdated = pacienteMapper.updateEntityFromRequest(request, pacienteToUpdate);
+		return pacienteMapper.entityToResponse(pacienteUpdated);
+	}
+
+	@Override
+	public void eliminar(Long id) {
+		pacienteRepository.delete(getPacienteOrThrow(id));
+		
+	}
+	
+	private Paciente getPacienteOrThrow(Long id) {
+		return pacienteRepository.findById(id).orElseThrow(()-> new NoSuchElementException("No se encontro el paciente con el id: " + id));
+	}
+
+}

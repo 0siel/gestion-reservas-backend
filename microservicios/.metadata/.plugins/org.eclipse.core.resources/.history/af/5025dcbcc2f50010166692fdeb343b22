@@ -1,0 +1,16 @@
+package com.example.demo.dtos;
+
+public record PacienteResponse(
+		Long id,
+		Short edad,
+		Double peso,
+		Double estatura,
+		Double imc,
+		String email,
+		String telefono,
+		String direccion,
+		String numeroExpediente
+		
+		) {
+
+}

@@ -1,0 +1,5 @@
+package com.osiel.gateway.configuration;
+
+public class SecurityConfig {
+
+}

@@ -1,0 +1,9 @@
+package com.osiel.auth.services;
+
+import com.osiel.auth.dtos.LoginRequest;
+
+public interface AuthService {
+	
+	String autenticar(LoginRequest request) throws Exception;
+
+}

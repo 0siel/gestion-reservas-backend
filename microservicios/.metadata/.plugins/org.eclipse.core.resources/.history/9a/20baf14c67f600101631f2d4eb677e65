@@ -1,0 +1,5 @@
+package com.osiel.medicos.mappers;
+
+public class MedicoMapper {
+
+}

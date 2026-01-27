@@ -1,0 +1,5 @@
+package com.example.demo.pacientes.entities;
+
+public class Paciente {
+
+}

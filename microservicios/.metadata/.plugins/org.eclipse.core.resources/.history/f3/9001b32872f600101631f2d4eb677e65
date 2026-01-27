@@ -1,0 +1,51 @@
+package com.osiel.medicos.services;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.osiel.medicos.dtos.MedicoRequest;
+import com.osiel.medicos.dtos.MedicoResponse;
+
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@AllArgsConstructor
+@Slf4j
+@Transactional
+public class MedicoServiceImpl implements MedicoService{
+	
+	
+	@Override
+	public MedicoResponse obtenerPorId(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MedicoResponse registrar(MedicoRequest request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MedicoResponse actualizar(MedicoRequest request, Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void eliminar(Long id) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<MedicoResponse> listar() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

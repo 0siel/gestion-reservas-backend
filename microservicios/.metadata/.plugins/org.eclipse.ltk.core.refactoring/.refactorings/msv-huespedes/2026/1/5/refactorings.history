@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename compilation unit &apos;msv_huespedes.mappers.Huespedmapper.java&apos; to &apos;HuespedMapper.java&apos;&#x0D;&#x0A;- Original project: &apos;msv-huespedes&apos;&#x0D;&#x0A;- Original element: &apos;msv_huespedes.mappers.Huespedmapper.java&apos;&#x0D;&#x0A;- Renamed element: &apos;msv_huespedes.mappers.HuespedMapper.java&apos;" description="Rename compilation unit &apos;Huespedmapper.java&apos;" flags="2" id="org.eclipse.jdt.ui.rename.compilationunit" input="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;msv_huespedes.mappers{Huespedmapper.java" name="HuespedMapper.java" references="false" stamp="1769409159972" version="1.0"/>
+</session>

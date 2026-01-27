@@ -1,0 +1,5 @@
+package msv_reservas.repositories;
+
+public class ReservaRepository {
+
+}

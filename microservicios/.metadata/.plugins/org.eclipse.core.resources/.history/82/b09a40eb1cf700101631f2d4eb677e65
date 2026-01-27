@@ -1,0 +1,98 @@
+package ms_pacientes.services;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import org.springframework.stereotype.Service;
+
+import com.example.demo.dto.PacienteRequest;
+import com.example.demo.dto.PacienteResponse;
+import com.example.demo.enums.EstadoRegistro;
+
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import ms_pacientes.mappers.PacienteMapper;
+import ms_pacientes.pacientes.entities.Paciente;
+
+@Service
+@Transactional
+@AllArgsConstructor
+public class PacienteServiceImpl implements PacienteService {
+	private final ms_pacientes.repositories.PacienteRepository pacienteRepository;
+	private final PacienteMapper pacienteMapper;
+	
+	
+
+	@Override
+	public List<PacienteResponse> listar() {
+		// TODO Auto-generated method stub
+		return pacienteRepository.findAll().stream().map(pacienteMapper::entityToResponse).toList();
+	}
+
+	@Override
+	public PacienteResponse obtenerPorId(Long id) {
+		// TODO Auto-generated method stub
+		return pacienteMapper.entityToResponse(getPacienteOrThrow(id));
+	}
+
+	@Override
+	public PacienteResponse registrar(PacienteRequest request) {
+		
+		Paciente pacienteToSave = pacienteMapper.requestToEntity(request);
+		return pacienteMapper.entityToResponse(pacienteRepository.save(pacienteToSave));
+	}
+
+	@Override
+	public PacienteResponse actualizar(PacienteRequest request, Long id) {
+		Paciente pacienteToUpdate = getPacienteOrThrow(id);
+		Paciente pacienteUpdated = pacienteMapper.updateEntityFromRequest(request, pacienteToUpdate);
+		return pacienteMapper.entityToResponse(pacienteUpdated);
+	}
+
+	
+	@Override
+	public void eliminar(Long id) {
+		Paciente paciente = getPacienteOrThrow(id);
+		
+		paciente.setEstadoRegistro(EstadoRegistro.ELIMINADO);
+		
+		pacienteRepository.save(paciente);
+		//pacienteRepository.delete(getPacienteOrThrow(id));
+		
+	}
+	
+	
+	private Paciente getPacienteOrThrow(Long id) {
+		return pacienteRepository.findByIdAndEstadoRegistro(id, EstadoRegistro.ACTIVO).orElseThrow(()-> new NoSuchElementException("No se encontro el paciente con el id: " + id));
+	}
+	
+	private void existsByEmail(String email) {
+		if(pacienteRepository.existsByEmailIgnoreCaseAndEstadoRegistro(email, EstadoRegistro.ACTIVO)) {
+			throw new IllegalArgumentException("Ya existe un paciente registrado con este email" + email);
+		}
+	}
+	
+	private void existsByTelefono(String telefono) {
+		if(pacienteRepository.existsByTelefonoAndEstadoRegistro(telefono, EstadoRegistro.ACTIVO)) {
+			throw new IllegalArgumentException("Ya existe un paciente registrado con este telefono" + telefono);
+		}
+	}
+	
+	private Double calcularImc(Double peso, Double estatura) {
+		return peso / (estatura * estatura);
+	}
+
+	@Override
+	public PacienteResponse obtenerPacientePorIdSinEstado(Long id) {
+		// TODO Auto-generated method stub
+		return  pacienteMapper.entityToResponse(pacienteRepository.findById(id).orElseThrow(()-> 
+				new NoSuchElementException("Paciente no encontrado con el id: "+ id)));
+	}
+	
+	private void validarEmailCambio(Paciente paciente, PacienteRequest request) {
+		if(!paciente.getEmail().equalsIgnoreCase(request.email())) {
+			existsByEmail(request.telefono());
+		}
+	}
+
+}

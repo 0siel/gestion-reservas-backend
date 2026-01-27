@@ -1,0 +1,18 @@
+package com.osiel.citas.controllers;
+
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.controllers.CommonController;
+import com.osiel.citas.dtos.CitaRequest;
+import com.osiel.citas.dtos.CitaResponse;
+import com.osiel.citas.services.CitaService;
+
+@RestController
+public class CitaController extends CommonController<CitaRequest, CitaResponse, CitaService> {
+
+	public CitaController(CitaService service) {
+		super(service);
+		// TODO Auto-generated constructor stub
+	}
+
+}

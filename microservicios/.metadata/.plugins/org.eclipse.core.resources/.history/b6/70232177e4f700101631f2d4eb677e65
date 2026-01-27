@@ -1,0 +1,14 @@
+spring.application.name=authorization-server
+
+server.port=9000
+
+
+# ===============================
+# ORACLE DATABASE
+# ===============================
+spring.datasource.url=jdbc:oracle:thin:@localhost:1521:FREE
+spring.datasource.username=PROYECTO_MEDICOS
+spring.datasource.password=tu_password
+spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
+
+spring.jpa.hibernate.ddl-auto=create-drop

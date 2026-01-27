@@ -1,0 +1,21 @@
+package ms_pacientes.repositories;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import ms_pacientes.pacientes.entities.Paciente;
+import com.example.demo.enums.EstadoRegistro;
+import java.util.List;
+import java.util.Optional;
+
+
+
+
+public interface PacienteRepository extends JpaRepository<Paciente, Long> {
+	
+	Optional <Paciente> findByIdAndEstadoRegistro(Long id, EstadoRegistro estadoRegistro);
+	
+	boolean existsByEmailIgnoreCaseAndEstadoRegistro(String email, EstadoRegistro estadoRegistro);
+	
+	boolean existsByTelefonoAndEstadoRegistro(String telefono, EstadoRegistro estadoRegistro);
+
+}

@@ -1,0 +1,27 @@
+package com.example.demo.clients;
+
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.service.annotation.PutExchange;
+
+import com.example.demo.dto.MedicoResponse;
+import com.example.demo.dto.PacienteResponse;
+
+@FeignClient(name = "msv-medicos")
+public interface MedicoClient{
+
+	@GetMapping("/{id}")
+	MedicoResponse obtenerMedicoPorId(@PathVariable Long id);
+	
+	@GetMapping("/id-medico/{id}")
+	MedicoResponse obtenerMedicoPorIdSinEstado(@PathVariable Long id);
+	
+	@PutMapping("/{id}/disponibilidad")
+	void actualizarDisponibilidad(
+			@PathVariable("id") Long id,
+			@RequestParam("idDisponibilidad") Long idDisponibilidad);
+}

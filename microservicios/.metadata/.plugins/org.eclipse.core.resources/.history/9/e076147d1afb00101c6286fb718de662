@@ -1,0 +1,5 @@
+package msv_reservas.services;
+
+public interface ReservaService {
+
+}

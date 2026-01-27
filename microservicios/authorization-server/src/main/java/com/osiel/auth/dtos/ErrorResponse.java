@@ -1,0 +1,7 @@
+package com.osiel.auth.dtos;
+
+public record ErrorResponse(
+        int codigo,
+        String mensaje
+) {
+}

@@ -1,0 +1,54 @@
+package com.osiel.citas.services;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.osiel.citas.dtos.CitaRequest;
+import com.osiel.citas.dtos.CitaResponse;
+import com.osiel.citas.mappers.CitaMapper;
+import com.osiel.citas.repositories.CitaRepository;
+
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@AllArgsConstructor
+@Slf4j
+@Transactional
+public class CitaServiceImpl implements CitaService {
+	private final CitaMapper citaMapper;
+	private final CitaRepository citaRepository;
+	
+	@Override
+	public List<CitaResponse> listar() {
+		return citaMa
+		return null;
+	}
+
+	@Override
+	public CitaResponse obtenerPorId(Long id) {
+		// TODO Auto-generated m
+		return null;
+	}
+
+	@Override
+	public CitaResponse registrar(CitaRequest request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CitaResponse actualizar(CitaRequest request, Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void eliminar(Long id) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

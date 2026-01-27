@@ -1,0 +1,40 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    loadbalancer:
+      enabled: true
+
+    gateway:
+      routes:
+        - id: msv-pacientes2
+          uri: lb://msv-pacientes2
+          predicates:
+            - Path=/api/msv-pacientes2/**
+          filters:
+            - StripPrefix=2
+
+        - id: msv-medicos
+          uri: lb://msv-medicos
+          predicates:
+            - Path=/api/msv-medicos/**
+          filters:
+            - StripPrefix=2
+
+        - id: msv-medicos
+          uri: lb://msv-medicos
+          predicates:
+            - Path=/api/msv-medicos/**
+          filters:
+            - StripPrefix=2
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+  instance:
+    instance-id: ${spring.application.name}:${random.value}

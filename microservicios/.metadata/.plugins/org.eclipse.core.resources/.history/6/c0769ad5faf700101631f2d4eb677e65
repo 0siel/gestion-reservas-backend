@@ -1,0 +1,9 @@
+package com.osiel.citas.services;
+
+import com.example.demo.services.CrudService;
+import com.osiel.citas.dtos.CitaRequest;
+import com.osiel.citas.dtos.CitaResponse;
+
+public interface CitaService extends CrudService<CitaRequest, CitaResponse> {
+
+}

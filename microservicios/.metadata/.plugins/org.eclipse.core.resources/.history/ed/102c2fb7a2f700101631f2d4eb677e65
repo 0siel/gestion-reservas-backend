@@ -1,0 +1,5 @@
+package com.osiel.auth.dtos;
+
+public record LoginRequest() {
+
+}

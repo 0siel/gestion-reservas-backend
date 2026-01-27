@@ -1,0 +1,182 @@
+package ms_pacientes.services;
+
+import java.time.Year;
+import java.util.List;
+import java.util.Locale;
+import java.util.NoSuchElementException;
+import java.util.Random;
+
+import org.springframework.stereotype.Service;
+
+import com.example.demo.dto.PacienteRequest;
+import com.example.demo.dto.PacienteResponse;
+import com.example.demo.enums.EstadoRegistro;
+
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import ms_pacientes.mappers.PacienteMapper;
+import ms_pacientes.pacientes.entities.Paciente;
+import ms_pacientes.repositories.PacienteRepository;
+
+@Service
+@Transactional
+@AllArgsConstructor
+public class PacienteServiceImpl implements PacienteService {
+	private final PacienteRepository pacienteRepository;
+	private final PacienteMapper pacienteMapper;
+	
+	@Override
+	public List<PacienteResponse> listar() {
+		// TODO Auto-generated method stub
+		return pacienteRepository.findAllByEstadoRegistro(EstadoRegistro.ACTIVO).stream().map(pacienteMapper::entityToResponse).toList();
+	}
+
+	@Override
+	public PacienteResponse obtenerPorId(Long id) {
+		// TODO Auto-generated method stub
+		return pacienteMapper.entityToResponse(getPacienteOrThrow(id));
+	}
+
+	@Override
+	public PacienteResponse registrar(PacienteRequest request) {
+		
+		validadUnicidad(request);
+		
+		String expediente = generarNumeroExpediente(request.apellidoPaterno(), request.apellidoMaterno());
+		
+		Double imc = calcularImc(request.peso(), request.estatura());
+		
+		Paciente pacienteToSave = pacienteMapper.requestToEntity(request, imc, expediente);
+		return pacienteMapper.entityToResponse(pacienteRepository.save(pacienteToSave));
+	}
+
+	@Override
+	public PacienteResponse actualizar(PacienteRequest request, Long id) {
+		Paciente pacienteToUpdate = getPacienteOrThrow(id);
+		validarEmailCambio(pacienteToUpdate, request);
+		validarTelefonoCambio(pacienteToUpdate, request);
+		
+		Double imc = calcularImcCambio(pacienteToUpdate, request);
+		
+		String expediente = regenerarExpediente(pacienteToUpdate, request);
+		
+		
+		Paciente pacienteUpdated = pacienteMapper.updateEntityFromRequest(request, pacienteToUpdate, imc, expediente);
+		return pacienteMapper.entityToResponse(pacienteUpdated);
+		
+		
+	}
+
+	
+	@Override
+	public void eliminar(Long id) {
+		Paciente paciente = getPacienteOrThrow(id);
+		
+		paciente.setEstadoRegistro(EstadoRegistro.ELIMINADO);
+		
+		pacienteRepository.save(paciente);
+		//pacienteRepository.delete(getPacienteOrThrow(id));
+		
+	}
+	
+	
+	private Paciente getPacienteOrThrow(Long id) {
+		
+		return pacienteRepository.findByIdAndEstadoRegistro(id, EstadoRegistro.ACTIVO).orElseThrow(()-> 
+			new NoSuchElementException("No se encontró un paciente con el ID: "+ id));
+	}
+	
+	private void existsByEmail(String email) {
+		if(pacienteRepository.existsByEmailIgnoreCaseAndEstadoRegistro(email, EstadoRegistro.ACTIVO)) {
+			throw new IllegalArgumentException("Ya existe un paciente registrado con este email" + email);
+		}
+	}
+	
+	private void existsByTelefono(String telefono) {
+		if(pacienteRepository.existsByTelefonoAndEstadoRegistro(telefono, EstadoRegistro.ACTIVO)) {
+			throw new IllegalArgumentException("Ya existe un paciente registrado con este telefono" + telefono);
+		}
+	}
+	
+	private Double calcularImc(Double peso, Double estatura) {
+		if (estatura == null || estatura <= 0) {
+	        return 0.0;
+	    }
+		return peso / (estatura * estatura);
+	}
+
+	@Override
+	public PacienteResponse obtenerPacientePorIdSinEstado(Long id) {
+		// TODO Auto-generated method stub
+		return  pacienteMapper.entityToResponse(pacienteRepository.findById(id).orElseThrow(()-> 
+				new NoSuchElementException("Paciente no encontrado con el id: "+ id)));
+	}
+	
+	private boolean validarEmailCambio(Paciente paciente, PacienteRequest request) {
+		if(!paciente.getEmail().equalsIgnoreCase(request.email())) {
+			existsByEmail(request.email());
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean validarTelefonoCambio(Paciente paciente, PacienteRequest request) {
+		if(!paciente.getTelefono().equalsIgnoreCase(request.telefono())) {
+			existsByTelefono(request.telefono());
+			return true;
+		} 
+		return false;
+	}
+	
+	private Double calcularImcCambio(Paciente paciente, PacienteRequest request) {
+		if(!paciente.getPeso().equals(request.peso()) || !paciente.getEstatura().equals(request.estatura())) {
+			return calcularImc(request.peso(), request.estatura());
+		}
+		return paciente.getImc();
+	}
+	
+	private void validadUnicidad(PacienteRequest request) {
+		existsByEmail(request.email());
+		existsByTelefono(request.telefono());
+	}
+	
+	public static String generarNumeroExpediente(
+            String apellidoPaterno,
+            String apellidoMaterno
+    ) {
+        
+        String nom = apellidoPaterno.trim().toUpperCase(Locale.ROOT);
+        String ape = apellidoMaterno.trim().toUpperCase(Locale.ROOT);
+
+       
+        String nomPart = completar(nom, 3);
+        String apePart = completar(ape, 3);
+
+        
+        int anio = Year.now().getValue();
+
+        
+        int random = new Random().nextInt(9000) + 1000;
+
+        return String.format("EXP-%s-%s-%d-%d", apePart, nomPart, anio, random);
+    }
+
+    private static String completar(String texto, int longitud) {
+        if (texto.length() >= longitud) {
+            return texto.substring(0, longitud);
+        }
+        return String.format("%-" + longitud + "s", texto).replace(' ', 'X');
+    }
+    
+    
+    private String regenerarExpediente(Paciente paciente, PacienteRequest request) {
+        boolean apellidosCambiaron = !paciente.getApellidoPaterno().equalsIgnoreCase(request.apellidoPaterno()) 
+                                  || !paciente.getApellidoMaterno().equalsIgnoreCase(request.apellidoMaterno());
+        
+        if (apellidosCambiaron) {
+            return generarNumeroExpediente(request.apellidoPaterno(), request.apellidoMaterno());
+        }
+        return paciente.getNumeroExpediente();
+    }
+	
+}

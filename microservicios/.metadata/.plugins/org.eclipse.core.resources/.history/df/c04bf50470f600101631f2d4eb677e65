@@ -1,0 +1,59 @@
+package com.osiel.medicos.services;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.demo.enums.EstadoRegistro;
+import com.osiel.medicos.dtos.MedicoRequest;
+import com.osiel.medicos.dtos.MedicoResponse;
+import com.osiel.medicos.entities.Medico;
+import com.osiel.medicos.mappers.MedicoMapper;
+import com.osiel.medicos.repositories.MedicoRepository;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@Transactional
+@AllArgsConstructor
+@Slf4j
+public class MedicoServiceImpl implements MedicoService {
+	
+	private final MedicoRepository medicoRepository;
+	private final MedicoMapper medicoMapper;
+	@Override
+	public List<MedicoResponse> listar() {
+		return medicoRepository.findAllByEstadoRegistro(EstadoRegistro.ACTIVO).stream().map(medicoMapper::entityToResponse).toList()
+;		
+	}
+
+	@Override
+	public MedicoResponse obtenerPorId(Long id) {
+		return medicoMapper.entityToResponse(getMedicoOrThrow(id));
+	}
+
+	@Override
+	public MedicoResponse registrar(MedicoRequest request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MedicoResponse actualizar(MedicoRequest request, Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void eliminar(Long id) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private Medico getMedicoOrThrow(Long id) {
+		return me
+	}
+
+}

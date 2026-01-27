@@ -1,0 +1,25 @@
+spring:
+  application:
+    name:
+      api-gateway
+  cloud:
+    loadbalancer:
+      enabled: true
+
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: msv-pacientes
+              uri: lb://msv-pacientes
+              predicates: 
+                - Path=/api/pacientes/**
+              filters:
+                -StripPrefix=2
+
+            - id: msv-pacientes
+              uri: lb://msv-medicos
+              predicates:
+                - Path=/api/medicos/**
+              filters:
+                - StripPrefix=2

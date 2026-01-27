@@ -1,0 +1,98 @@
+package com.osiel.citas.mappers;
+
+import org.springframework.stereotype.Component;
+
+import com.example.demo.dto.DatosPaciente;
+import com.example.demo.dto.PacienteResponse;
+import com.example.demo.enums.EstadoRegistro;
+import com.example.demo.mappers.CommonMapper;
+import com.osiel.citas.dtos.CitaRequest;
+import com.osiel.citas.dtos.CitaResponse;
+import com.osiel.citas.entities.Cita;
+import com.osiel.citas.enums.EstadoCita;
+
+@Component
+public class CitaMapper implements CommonMapper<CitaRequest, CitaResponse, Cita> {
+
+	@Override
+	public CitaResponse entityToResponse(Cita entity) {
+if(entity == null) return null;
+		
+		
+		return new CitaResponse(
+				entity.getId(), 
+				null, 
+				entity.getIdMedico().toString(),  
+				entity.getFechaCita(), 
+				entity.getSintomas(),  
+				entity.getEstadoCita().getDescripcion());
+	
+		}
+	
+	
+	public CitaResponse entityToResponse(Cita entity, PacienteResponse paciente) {
+		if(entity == null) return null;
+				
+				return new CitaResponse(
+						entity.getId(), 
+						datosPacienteFromPacienteResponse(paciente), 
+						entity.getIdMedico().toString(),  
+						entity.getFechaCita(), 
+						entity.getSintomas(),  
+						entity.getEstadoCita().getDescripcion());	
+				}
+
+	@Override
+	public Cita requestToEntity(CitaRequest request) {
+		if(request == null) return null;
+		
+		Cita cita = new Cita();
+		
+		cita.setIdPaciente(request.idPaciente());
+		cita.setIdMedico(request.idMedico());
+		cita.setFechaCita(request.fechaCita());;
+		cita.setSintomas(request.sintomas());
+		cita.setEstadoCita(EstadoCita.PENDIENTE);
+		cita.setEstadoRegistro(EstadoRegistro.ACTIVO);
+		
+		return cita;
+	}
+
+	@Override
+	public Cita updateEntityFromRequest(CitaRequest request, Cita entity) {
+		if(entity == null || request == null ) return null;
+		
+		entity.setIdPaciente(request.idPaciente());
+		entity.setIdMedico(request.idMedico());
+		entity.setFechaCita(request.fechaCita());;
+		entity.setSintomas(request.sintomas());
+		
+		return entity;
+	}
+	
+	
+	public Cita updateEntityFromRequest(CitaRequest request, Cita entity, EstadoCita estadoCita) {
+		if(entity == null || request == null ) return null;
+		
+		Cita cita = updateEntityFromRequest(request, entity);
+		
+		cita.setEstadoCita(estadoCita);
+		
+		return entity;
+	}
+	
+	private DatosPaciente datosPacienteFromPacienteResponse(PacienteResponse paciente) {
+		if(paciente== null) return null;
+		
+		return new DatosPaciente(
+				paciente.nombre(),
+				paciente.numeroExpediente(),
+				paciente.edad() + " años",
+				paciente.peso() + "kg.",
+				paciente.estatura() + "m.",
+				paciente.imc() + "Estado salud", //<--- insertar el estado de obesidad de acuerdo a tabla imc
+				paciente.telefono()
+				);
+	}
+
+}

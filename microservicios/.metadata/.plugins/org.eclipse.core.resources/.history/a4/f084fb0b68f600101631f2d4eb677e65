@@ -1,0 +1,4 @@
+spring.application.name=msv-medicos
+
+server.port=8081
+

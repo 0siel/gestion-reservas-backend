@@ -1,0 +1,5 @@
+package com.osiel.medicos.dtos;
+
+public record MedicoRequest() {
+
+}

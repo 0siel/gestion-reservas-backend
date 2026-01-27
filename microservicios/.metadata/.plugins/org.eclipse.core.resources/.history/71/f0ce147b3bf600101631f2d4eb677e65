@@ -1,0 +1,5 @@
+package com.osiel.citas.dtos;
+
+public record CitaRequest() {
+
+}

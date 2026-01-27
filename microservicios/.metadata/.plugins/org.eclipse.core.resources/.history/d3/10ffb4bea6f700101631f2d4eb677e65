@@ -1,0 +1,5 @@
+package com.osiel.auth.services;
+
+public class AuthServiceImpl {
+
+}

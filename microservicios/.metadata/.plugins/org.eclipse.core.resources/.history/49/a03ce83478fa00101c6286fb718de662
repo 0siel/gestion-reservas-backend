@@ -1,0 +1,5 @@
+package msv_huespedes.entities;
+
+public class Huesped {
+
+}

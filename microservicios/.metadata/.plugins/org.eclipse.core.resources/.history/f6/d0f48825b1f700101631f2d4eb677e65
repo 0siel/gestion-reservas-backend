@@ -1,0 +1,5 @@
+package com.osiel.auth.controllers;
+
+public class AuthController {
+
+}

@@ -1,0 +1,82 @@
+package com.example.demo.mappers;
+
+import org.springframework.stereotype.Component;
+
+import com.example.demo.dtos.PacienteRequest;
+import com.example.demo.dtos.PacienteResponse;
+import com.example.demo.enums.EstadoRegistro;
+import com.example.demo.pacientes.entities.Paciente;
+
+@Component
+public class PacienteMapper implements CommonMapper<PacienteRequest, PacienteResponse, Paciente>  {
+
+	@Override
+	public PacienteResponse entityToResponse(Paciente entity) {
+		// TODO Auto-generated method stub
+		if(entity == null) return null;
+		
+		String nombre = String.join(" ", entity.getNombre(), entity.getApellidoPaterno(), entity.getApellidoMaterno());
+		
+		return new PacienteResponse(
+				entity.getId(),
+				nombre,
+				entity.getEdad(),
+				entity.getPeso(),
+				entity.getEstatura(),
+				entity.getImc(),
+				entity.getEmail(),
+				entity.getDireccion(),
+				entity.getTelefono(),
+				entity.getNumeroExpediente()
+				);
+	}
+
+	@Override
+	public Paciente requestToEntity(PacienteRequest request) {
+		// TODO Auto-generated method stub
+		if(request == null) return null;
+		
+		
+		
+		Paciente paciente = new Paciente();
+		
+		paciente.setNombre(request.nombre());
+		paciente.setApellidoPaterno(request.apellidoPaterno());
+		paciente.setApellidoMaterno(request.apellidoMaterno());
+		paciente.setEdad(request.edad());
+		paciente.setPeso(request.peso());
+		paciente.setEstatura(request.estatura());
+		paciente.setImc(request.imc());
+		paciente.setEmail(request.email());
+		paciente.setTelefono(request.telefono());
+		paciente.setDireccion(request.direccion());
+		paciente.setNumeroExpediente(request.numeroExpediente());
+		
+		paciente.setEstadoRegistro(EstadoRegistro.ACTIVO);
+		
+		return paciente;
+	}
+
+	@Override
+	public Paciente updateEntityFromRequest(PacienteRequest request, Paciente entity) {
+		// TODO Auto-generated method stub
+		
+		if(request == null || entity == null) return null;
+		
+		entity.setNombre(request.nombre());
+		entity.setApellidoPaterno(request.apellidoPaterno());
+		entity.setApellidoMaterno(request.apellidoMaterno());
+		entity.setEdad(request.edad());
+		entity.setPeso(request.peso());
+		entity.setEstatura(request.estatura());
+		entity.setImc(request.imc());
+		entity.setEmail(request.email());
+		entity.setTelefono(request.telefono());
+		entity.setDireccion(request.direccion());
+		entity.setNumeroExpediente(request.numeroExpediente());
+		entity.setEstadoRegistro(request.estadoRegistro());
+		
+		return entity;
+	}
+
+}

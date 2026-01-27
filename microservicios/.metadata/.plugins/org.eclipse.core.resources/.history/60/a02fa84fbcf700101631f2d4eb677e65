@@ -1,0 +1,24 @@
+package com.osiel.medicos.repositories;
+import com.example.demo.dto.MedicoResponse;
+import com.example.demo.enums.EstadoRegistro;
+
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.osiel.medicos.entities.Medico;
+
+public interface MedicoRepository extends JpaRepository<Medico, Long> {
+	
+	Medico findByIdAndEstadoRegistro(Long id, EstadoRegistro estadoRegistro);
+
+	List<Medico> findAllByEstadoRegistro(EstadoRegistro estadoRegistro);
+	
+	boolean existsByEmailIgnoreCaseAndEstadoRegistro(String email, EstadoRegistro estadoRegistro);
+	
+	boolean existsByTelefonoAndEstadoRegistro(String telefono, EstadoRegistro estadoRegistro);
+	
+	
+
+}

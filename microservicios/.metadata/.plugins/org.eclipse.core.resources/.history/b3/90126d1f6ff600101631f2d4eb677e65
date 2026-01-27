@@ -1,0 +1,5 @@
+package com.osiel.medicos.services;
+
+public class MedicoServiceImpl {
+
+}

@@ -1,0 +1,5 @@
+package com.osiel.medicos.repositories;
+
+public interface MedicoRepository {
+
+}

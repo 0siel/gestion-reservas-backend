@@ -1,0 +1,5 @@
+package msv_huespedes.controllers;
+
+public class HuespedController {
+
+}

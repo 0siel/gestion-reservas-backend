@@ -1,0 +1,5 @@
+package com.osiel.auth.configuration;
+
+public class SecurityConfig {
+
+}

@@ -1,0 +1,9 @@
+package msv_reservas.services;
+
+import com.example.demo.dto.ReservaRequest;
+import com.example.demo.dto.ReservaResponse;
+import com.example.demo.services.CrudService;
+
+public interface ReservaService extends CrudService<ReservaRequest, ReservaResponse> {
+
+}

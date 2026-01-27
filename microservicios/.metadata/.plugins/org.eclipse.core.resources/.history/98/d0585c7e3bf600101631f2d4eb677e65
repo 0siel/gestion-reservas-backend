@@ -1,0 +1,5 @@
+package com.osiel.citas.repositories;
+
+public interface CitaRepository {
+
+}

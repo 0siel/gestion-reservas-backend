@@ -1,0 +1,131 @@
+package com.osiel.medicos.services;
+
+import java.security.PrivateKey;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import org.springframework.stereotype.Service;
+
+import com.example.demo.dto.MedicoRequest;
+import com.example.demo.dto.MedicoResponse;
+import com.example.demo.dto.PacienteResponse;
+import com.example.demo.enums.DisponibilidadMedico;
+import com.example.demo.enums.EstadoRegistro;
+import com.osiel.medicos.entities.Medico;
+import com.osiel.medicos.mappers.MedicoMapper;
+import com.osiel.medicos.repositories.MedicoRepository;
+
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@AllArgsConstructor
+@Slf4j
+@Transactional
+public class MedicoServiceImpl implements MedicoService{
+	private final MedicoMapper medicoMapper;
+	private final MedicoRepository medicoRepository;
+	
+	@Override
+	public List<MedicoResponse> listar() {
+		// TODO Auto-generated method stub
+		return medicoRepository.findAllByEstadoRegistro(EstadoRegistro.ACTIVO).stream().map(medicoMapper::entityToResponse).toList();
+		
+	}
+	
+	
+	@Override
+	public MedicoResponse obtenerPorId(Long id) {
+		return medicoMapper.entityToResponse(getMedicoOrThrow(id));
+		}
+
+	@Override
+	public MedicoResponse registrar(MedicoRequest request) {
+	    validarEmail(request.email());
+	    validarTelefono(request.telefono());
+	    // NUEVA VALIDACIÓN
+	    validarCedulaUnica(request.cedulaProfesional());
+	    
+	    Medico medico = medicoMapper.requestToEntity(request);
+	    return medicoMapper.entityToResponse(medicoRepository.save(medico));
+	}
+
+	@Override
+	public MedicoResponse actualizar(MedicoRequest request, Long id) {
+	    Medico medico = getMedicoOrThrow(id);
+	    
+	    validarEmailCambio(medico, request);
+	    validarTelefonoCambio(medico, request);
+	    // NUEVA VALIDACIÓN
+	    validarCedulaUnicaCambio(medico, request.cedulaProfesional());
+	    
+	    Medico medicoUpdated = medicoMapper.updateEntityFromRequest(request, medico);
+	    return medicoMapper.entityToResponse(medicoRepository.save(medicoUpdated));
+	}
+
+	@Override
+	public void eliminar(Long id) {
+		Medico medico = getMedicoOrThrow(id);
+		
+		medico.setEstadoRegistro(EstadoRegistro.ELIMINADO);
+		
+		Medico updatedMedico = medicoRepository.save(medico);
+		
+	}
+
+	
+	private Medico getMedicoOrThrow(Long id) {
+		return medicoRepository.findByIdAndEstadoRegistro(id, EstadoRegistro.ACTIVO).orElseThrow(()-> new NoSuchElementException("No se encontró ningún medico con el ID: " + id));
+	}
+	
+	private void validarTelefono(String telefono) {
+		if(medicoRepository.existsByTelefonoAndEstadoRegistro(telefono, EstadoRegistro.ACTIVO)) {
+			throw new IllegalArgumentException("Ya existe un médico registrado con este teléfono");
+		}
+	}
+	
+	private void validarEmail(String email) {
+		if(medicoRepository.existsByEmailIgnoreCaseAndEstadoRegistro(email, EstadoRegistro.ACTIVO)) {
+			throw new IllegalArgumentException("Ya existe un médico registrado con este email");
+	}
+	
+	
+	}
+	
+	private void validarEmailCambio(Medico medico, MedicoRequest request) {
+		if(!medico.getEmail().equalsIgnoreCase(request.email())) {
+			validarEmail(request.email());
+		}
+	}
+	
+	private void validarTelefonoCambio(Medico medico, MedicoRequest request) {
+		if(!medico.getTelefono().equalsIgnoreCase(request.telefono())) {
+			validarTelefono(request.telefono());
+			
+		}
+	}
+	
+	private void validarCedulaUnica(String cedula) {
+	    medicoRepository.findByCedulaProfesionalAndEstadoRegistro(cedula, "ACTIVO")
+	        .ifPresent(m -> {
+	            throw new RuntimeException("La cédula profesional ya se encuentra registrada y activa.");
+	        });
+	}
+
+	private void validarCedulaUnicaCambio(Medico medicoActual, String nuevaCedula) {
+	    if (!medicoActual.getCedulaProfesional().equals(nuevaCedula)) {
+	        validarCedulaUnica(nuevaCedula);
+	    }
+	}
+	
+	
+	
+	@Override
+	public MedicoResponse obtenerMedicoPorIdSinEstado(Long id) {
+		// TODO Auto-generated method stub
+		return  medicoMapper.entityToResponse(medicoRepository.findById(id).orElseThrow(()-> 
+				new NoSuchElementException("Paciente no encontrado con el id: "+ id)));
+	}
+
+}
