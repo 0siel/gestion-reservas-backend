@@ -1,5 +1,0 @@
-package com.osiel.medicos.dtos;
-
-public record MedicoResponse() {
-
-}

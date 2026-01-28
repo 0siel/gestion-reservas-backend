@@ -1,9 +1,0 @@
-package com.osiel.auth.services;
-
-import com.osiel.auth.dtos.LoginRequest;
-
-public interface AuthService {
-	
-	TokenResponse autenticar(LoginRequest request) throws Exception;
-
-}
