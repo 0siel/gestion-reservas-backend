@@ -1,0 +1,39 @@
+package com.example.demo.dto;
+
+import jakarta.validation.constraints.*;
+
+public record HuespedRequest(
+
+    @NotBlank(message = "El nombre es requerido")
+    @Size(max = 100, message = "El nombre no puede exceder los 100 caracteres")
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$", message = "El nombre solo puede contener letras")
+    String nombre,
+
+    @NotBlank(message = "El apellido paterno es requerido")
+    @Size(max = 100, message = "El apellido paterno no puede exceder los 100 caracteres")
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$", message = "El apellido paterno solo puede contener letras")
+    String apellidoPaterno,
+
+    @NotBlank(message = "El apellido materno es requerido")
+    @Size(max = 100, message = "El apellido materno no puede exceder los 100 caracteres")
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$", message = "El apellido materno solo puede contener letras")
+    String apellidoMaterno,
+
+    @NotBlank(message = "El email es requerido")
+    @Email(message = "Formato de email inválido")
+    @Size(max = 150, message = "El email no puede exceder los 150 caracteres")
+    String email,
+
+    @NotBlank(message = "El teléfono es requerido")
+    @Pattern(regexp = "^\\d{10}$", message = "El teléfono debe contener exactamente 10 dígitos")
+    String telefono,
+
+    @NotBlank(message = "El documento es requerido")
+    @Size(max = 50, message = "El documento no puede exceder los 50 caracteres")
+    String documento,
+
+    @NotBlank(message = "La nacionalidad es requerida")
+    @Size(max = 50, message = "La nacionalidad no puede exceder los 50 caracteres")
+    String nacionalidad
+) {
+}
