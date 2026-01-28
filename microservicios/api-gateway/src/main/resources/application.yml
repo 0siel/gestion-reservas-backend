@@ -6,7 +6,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:9000/oauth2/jwks			
+          jwk-set-uri: http://localhost:9000/oauth2/jwks      
 
   cloud:
     loadbalancer:
@@ -32,6 +32,13 @@ spring:
           uri: lb://msv-citas
           predicates:
             - Path=/api/citas/**
+          filters:
+            - StripPrefix=2
+
+        - id: msv-huespedes
+          uri: lb://msv-huespedes
+          predicates:
+            - Path=/api/huespedes/**
           filters:
             - StripPrefix=2
 server:
