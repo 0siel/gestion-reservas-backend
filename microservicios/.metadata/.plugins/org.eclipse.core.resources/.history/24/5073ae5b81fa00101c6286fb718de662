@@ -1,5 +1,0 @@
-package msv_huespedes.services;
-
-public interface HuespedService {
-
-}
