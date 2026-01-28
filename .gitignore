@@ -9,3 +9,4 @@ target/
 *.class
 .mvn/
 /.metadata/
+/microservicios/.metadata/
