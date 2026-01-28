@@ -1,13 +1,7 @@
 package msv_reservas.controllers;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.controllers.CommonController;
-import com.example.demo.dto.PacienteRequest;
-import com.example.demo.dto.PacienteResponse;
 import com.example.demo.dto.ReservaRequest;
 import com.example.demo.dto.ReservaResponse;
 
@@ -15,13 +9,17 @@ import msv_reservas.services.ReservaService;
 
 
 @RestController
-@RequestMapping("/reservas")
+
 public class ReservaController extends CommonController<ReservaRequest, ReservaResponse, ReservaService>{
 
 	public ReservaController(ReservaService service) {
 		super(service);
 		// TODO Auto-generated constructor stub
 	}
+	
+	//boolean HuespedTieneReservasActivas
+	//boolean HabitacionesTieneReservasActivas
+	
 
 	
 

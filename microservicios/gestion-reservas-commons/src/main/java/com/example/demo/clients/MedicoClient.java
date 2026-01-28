@@ -21,7 +21,7 @@ public interface MedicoClient{
 	MedicoResponse obtenerMedicoPorIdSinEstado(@PathVariable Long id);
 	
 	@PutMapping("/{id}/disponibilidad")
-	void actualizarDisponibilidad(
+	void actualizarDisponibilidadHabitacion(
 			@PathVariable("id") Long id,
 			@RequestParam("idDisponibilidad") Long idDisponibilidad);
 }

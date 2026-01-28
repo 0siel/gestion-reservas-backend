@@ -1,5 +1,6 @@
 package msv_reservas.services;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,12 @@ public class ReservaServiceImpl implements ReservaService {
 	@Transactional
 	public ReservaResponse registrar(ReservaRequest request) {
 	Reserva reserva = mapper.requestToEntity(request);
+	
+	//Logica de negocio para calcular el monto total
+	reserva.setCantNoches(calcularNoches(reserva));
+	//reserva.setMontoTotal(calcularMontoTotal(reserva));
+	//reserva.setEstado(EstadoReserva.PENDIENTE);
+	
     return mapper.entityToResponse(reservaRepository.save(reserva));
 		
 	}
@@ -51,6 +58,12 @@ public class ReservaServiceImpl implements ReservaService {
 	public ReservaResponse actualizar(ReservaRequest request, Long id) {
 		Reserva reservaExistente = getEntityOrThrow(id);
         Reserva reservaActualizado = mapper.updateEntityFromRequest(request, reservaExistente);
+        
+        //Actualizar lógica de negocio si la fecha cambia 
+        reservaActualizado.setCantNoches(calcularNoches(reservaActualizado));
+        //reservaActualizado.setMontoTotal(calcularMontoTotal(reservaActualizado));
+
+        
         return mapper.entityToResponse(reservaRepository.save(reservaActualizado));
 	}
 
@@ -67,4 +80,14 @@ public class ReservaServiceImpl implements ReservaService {
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada con ID: " + id));
 
 }
+	
+	//Métodos auxiliares para calcular el monto total 
+	 private int calcularNoches(Reserva reserva) {
+	        if(reserva.getFechaEntrada() != null && reserva.getFechaSalida() != null) {
+	            return (int) ChronoUnit.DAYS.between(reserva.getFechaEntrada(), reserva.getFechaSalida());
+	        }
+	        return 0;
+	    }
+
+	   
 }

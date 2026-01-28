@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import com.example.demo.dto.ReservaRequest;
 import com.example.demo.dto.ReservaResponse;
 import com.example.demo.mappers.CommonMapper;
-
 import msv_reservas.entities.Reserva;
 
 @Component
@@ -22,7 +21,7 @@ public class ReservaMapper implements CommonMapper<ReservaRequest, ReservaRespon
 		entity.getFechaSalida(),
 		entity.getCantNoches(),
 		entity.getMontoTotal(),
-		entity.getEstado(),
+		entity.getEstado() != null ? entity.getEstado().name() : null, //Conversión de enum a string
 		entity.getFechaCreacion()
 		);
 		
@@ -37,16 +36,26 @@ public class ReservaMapper implements CommonMapper<ReservaRequest, ReservaRespon
 		reserva.setIdHabitacion(request.idHabitacion());
 		reserva.setFechaEntrada(request.fechaEntrada());
 		reserva.setFechaSalida(request.fechaSalida());
+		
+		return reserva;
 	}
 
-	@Override
-	public Reserva updateEntityFromRequest(ReservaRequest Request, Reserva entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	
-	
-	
+ 
+@Override
+public Reserva updateEntityFromRequest(ReservaRequest request, Reserva entity) {
+    if(request == null || entity == null) return entity; 
+    entity.setIdHuesped(request.idHuesped());
+    entity.setIdHabitacion(request.idHabitacion());
+    entity.setFechaEntrada(request.fechaEntrada());
+    entity.setFechaSalida(request.fechaSalida());
+  //  entity.setCantNoches(request.cantNoches());
+    //entity.setMontoTotal(request.montoTotal());
+    //entity.setEstado(request.estado());
+    //entity.setFechaCreacion(request.fechaCreacion());
+    return entity;
+}
+
+
 	
 }
