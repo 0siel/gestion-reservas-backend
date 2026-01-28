@@ -28,10 +28,10 @@ spring:
           filters:
             - StripPrefix=2
 
-        - id: msv-citas
-          uri: lb://msv-citas
+        - id: msv-huespedes
+          uri: lb://msv-huespedes
           predicates:
-            - Path=/api/citas/**
+            - Path=/api/huespedes/**
           filters:
             - StripPrefix=2
 server:

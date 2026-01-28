@@ -8,3 +8,12 @@
 target/
 *.class
 .mvn/
+
+# Eclipse
+.metadata/
+.project
+.classpath
+
+# Java
+target/
+*.log

@@ -1,5 +1,0 @@
-package com.osiel.auth.repositories;
-
-public interface RolRepository {
-
-}
