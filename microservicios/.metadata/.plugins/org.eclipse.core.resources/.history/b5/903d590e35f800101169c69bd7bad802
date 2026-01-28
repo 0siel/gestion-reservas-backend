@@ -1,5 +1,0 @@
-package ms_pacientes.clients;
-
-public interface CitaClient {
-
-}

@@ -1,5 +1,0 @@
-package com.osiel.auth.services;
-
-public interface UsuarioService {
-
-}
