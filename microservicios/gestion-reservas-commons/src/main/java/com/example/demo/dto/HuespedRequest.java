@@ -1,5 +1,7 @@
 package com.example.demo.dto;
 
+import com.example.demo.enums.Nacionalidad;
+
 import jakarta.validation.constraints.*;
 
 public record HuespedRequest(
@@ -29,7 +31,7 @@ public record HuespedRequest(
     @NotBlank(message = "El documento es requerido")
     String documento,
 
-    @NotBlank(message = "La nacionalidad es requerida")
-    String nacionalidad
+    @NotNull(message = "La nacionalidad es requerida")
+    Nacionalidad nacionalidad
 ) {
 }

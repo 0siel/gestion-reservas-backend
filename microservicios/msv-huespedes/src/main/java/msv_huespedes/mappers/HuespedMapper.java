@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.example.demo.dto.HuespedRequest;
 import com.example.demo.dto.HuespedResponse;
+import com.example.demo.enums.EstadoRegistro;
 import com.example.demo.mappers.CommonMapper;
 
 import msv_huespedes.entities.Huesped;
@@ -15,8 +16,6 @@ public class HuespedMapper implements CommonMapper<HuespedRequest, HuespedRespon
     @Override
     public HuespedResponse entityToResponse(Huesped entity) {
         if (entity == null) return null;
-        
-        // Mapeo directo 1 a 1 para que el Front reciba los datos puros
         return new HuespedResponse(
                 entity.getId(),
                 entity.getNombre(),
@@ -25,14 +24,14 @@ public class HuespedMapper implements CommonMapper<HuespedRequest, HuespedRespon
                 entity.getEmail(),
                 entity.getTelefono(),
                 entity.getDocumento(),
-                entity.getNacionalidad()
+                entity.getNacionalidad(), // Enum Nacionalidad
+                entity.getEstadoRegistro() // Enum EstadoRegistro
         );
     }
 
     @Override
     public Huesped requestToEntity(HuespedRequest request) {
         if (request == null) return null;
-        
         Huesped huesped = new Huesped();
         huesped.setNombre(request.nombre());
         huesped.setApellidoPaterno(request.apellidoPaterno());
@@ -41,14 +40,13 @@ public class HuespedMapper implements CommonMapper<HuespedRequest, HuespedRespon
         huesped.setTelefono(request.telefono());
         huesped.setDocumento(request.documento());
         huesped.setNacionalidad(request.nacionalidad());
-        
+        huesped.setEstadoRegistro(EstadoRegistro.ACTIVO); // Estado por defecto
         return huesped;
     }
 
     @Override
     public Huesped updateEntityFromRequest(HuespedRequest request, Huesped entity) {
         if (request == null || entity == null) return entity;
-        
         entity.setNombre(request.nombre());
         entity.setApellidoPaterno(request.apellidoPaterno());
         entity.setApellidoMaterno(request.apellidoMaterno());
@@ -56,7 +54,6 @@ public class HuespedMapper implements CommonMapper<HuespedRequest, HuespedRespon
         entity.setTelefono(request.telefono());
         entity.setDocumento(request.documento());
         entity.setNacionalidad(request.nacionalidad());
-        
         return entity;
     }
 }

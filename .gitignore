@@ -2,7 +2,6 @@
 .env
 
 # No subir el script de inicialización si contiene contraseñas
-/init-db/setup.sql
 
 # Carpetas de compilación de Java (Spring Boot)
 target/
