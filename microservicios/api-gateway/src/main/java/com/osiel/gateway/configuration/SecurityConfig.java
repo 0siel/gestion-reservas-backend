@@ -41,6 +41,7 @@ public class SecurityConfig {
 			// 		
 			.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
 				jwt.jwtAuthenticationConverter(reactiveJwtAuthenticationConverterAdapter())));
+			*/
 		
 		return http.build();
 	}
