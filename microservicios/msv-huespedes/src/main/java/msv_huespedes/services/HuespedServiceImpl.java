@@ -1,6 +1,5 @@
 package msv_huespedes.services;
 
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,11 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.HuespedRequest;
 import com.example.demo.dto.HuespedResponse;
+import com.example.demo.enums.EstadoRegistro;
+import com.example.demo.exceptions.RecursoDuplicadoException; // Import nuevo
+import com.example.demo.exceptions.RecursoNoEncontradoException; // Import nuevo
 
 import msv_huespedes.entities.Huesped;
 import msv_huespedes.mappers.HuespedMapper;
 import msv_huespedes.repositories.HuespedRepository;
-import msv_huespedes.services.HuespedService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +28,7 @@ public class HuespedServiceImpl implements HuespedService {
     @Override
     @Transactional(readOnly = true)
     public List<HuespedResponse> listar() {
-        return huespedRepository.findAll().stream()
+        return huespedRepository.findAllByEstadoRegistro(EstadoRegistro.ACTIVO).stream()
                 .map(mapper::entityToResponse)
                 .collect(Collectors.toList());
     }
@@ -41,7 +42,11 @@ public class HuespedServiceImpl implements HuespedService {
     @Override
     @Transactional
     public HuespedResponse registrar(HuespedRequest request) {
+        validarUnicidad(request, null);
+
         Huesped huesped = mapper.requestToEntity(request);
+        huesped.setEstadoRegistro(EstadoRegistro.ACTIVO);
+        
         return mapper.entityToResponse(huespedRepository.save(huesped));
     }
 
@@ -49,7 +54,11 @@ public class HuespedServiceImpl implements HuespedService {
     @Transactional
     public HuespedResponse actualizar(HuespedRequest request, Long id) {
         Huesped huespedExistente = getEntityOrThrow(id);
+        
+        validarUnicidad(request, id);
+        
         Huesped huespedActualizado = mapper.updateEntityFromRequest(request, huespedExistente);
+        
         return mapper.entityToResponse(huespedRepository.save(huespedActualizado));
     }
 
@@ -57,15 +66,38 @@ public class HuespedServiceImpl implements HuespedService {
     @Transactional
     public void eliminar(Long id) {
         Huesped huesped = getEntityOrThrow(id);
-        huespedRepository.delete(huesped);
+        huesped.setEstadoRegistro(EstadoRegistro.ELIMINADO);
+        huespedRepository.save(huesped);
     }
 
-    /**
-     * Método de soporte para validar la existencia del huésped.
-     * Lanza una excepción si el ID no existe en el esquema HUESPEDES_USER.
-     */
+    private void validarUnicidad(HuespedRequest request, Long id) {
+        boolean emailExiste;
+        boolean telefonoExiste;
+        boolean documentoExiste;
+
+        if (id == null) {
+            emailExiste = huespedRepository.existsByEmailAndEstadoRegistro(request.email(), EstadoRegistro.ACTIVO);
+            telefonoExiste = huespedRepository.existsByTelefonoAndEstadoRegistro(request.telefono(), EstadoRegistro.ACTIVO);
+            documentoExiste = huespedRepository.existsByDocumentoAndEstadoRegistro(request.documento(), EstadoRegistro.ACTIVO);
+        } else {
+            emailExiste = huespedRepository.existsByEmailAndIdNotAndEstadoRegistro(request.email(), id, EstadoRegistro.ACTIVO);
+            telefonoExiste = huespedRepository.existsByTelefonoAndIdNotAndEstadoRegistro(request.telefono(), id, EstadoRegistro.ACTIVO);
+            documentoExiste = huespedRepository.existsByDocumentoAndIdNotAndEstadoRegistro(request.documento(), id, EstadoRegistro.ACTIVO);
+        }
+
+        if (emailExiste) {
+            throw new RecursoDuplicadoException("El email " + request.email() + " ya se encuentra registrado.");
+        }
+        if (telefonoExiste) {
+            throw new RecursoDuplicadoException("El teléfono " + request.telefono() + " ya se encuentra registrado.");
+        }
+        if (documentoExiste) {
+            throw new RecursoDuplicadoException("El documento " + request.documento() + " ya se encuentra registrado.");
+        }
+    }
+
     private Huesped getEntityOrThrow(Long id) {
-        return huespedRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Huésped no encontrado con ID: " + id));
+        return huespedRepository.findByIdAndEstadoRegistro(id, EstadoRegistro.ACTIVO)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el huésped con ID: " + id));
     }
 }
