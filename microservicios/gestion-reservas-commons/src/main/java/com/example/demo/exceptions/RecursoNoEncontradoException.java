@@ -1,7 +1,12 @@
 package com.example.demo.exceptions;
 
 public class RecursoNoEncontradoException extends RuntimeException {
-    public RecursoNoEncontradoException(String mensaje) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public RecursoNoEncontradoException(String mensaje) {
         super(mensaje);
     }
 }

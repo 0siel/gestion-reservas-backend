@@ -10,7 +10,5 @@ public record HuespedResponse(
 	    String apellidoMaterno,
 	    String email,
 	    String telefono,
-	    String documento,
-	    Nacionalidad nacionalidad,
-	    EstadoRegistro estadoRegistro
+	    String documento
 	) {}

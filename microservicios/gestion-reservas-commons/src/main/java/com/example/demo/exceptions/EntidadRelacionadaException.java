@@ -1,7 +1,12 @@
 package com.example.demo.exceptions;
 
 public class EntidadRelacionadaException extends RuntimeException {
-    public EntidadRelacionadaException(String message) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public EntidadRelacionadaException(String message) {
         super(message);
     }
 }

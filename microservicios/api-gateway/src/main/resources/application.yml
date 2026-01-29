@@ -48,6 +48,13 @@ spring:
             - Path=/api/habitaciones/**
           filters:
             - StripPrefix=2
+
+        - id: msv-reservas
+          uri: lb://msv-reservas
+          predicates:
+            - Path=/api/reservas/**
+          filters:
+            - StripPrefix=2
 server:
   port: 8090
 eureka:
