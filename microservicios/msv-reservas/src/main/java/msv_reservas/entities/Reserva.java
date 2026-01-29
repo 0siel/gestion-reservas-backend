@@ -1,9 +1,8 @@
 package msv_reservas.entities;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
-import org.springframework.data.annotation.Id;
 
 import com.example.demo.enums.EstadoReserva;
 
@@ -20,6 +19,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import jakarta.persistence.Id;
+
 
 @Entity
 @Table(name = "RESERVAS", schema = "RESERVAS_USER")
@@ -48,6 +49,7 @@ public class Reserva {
     private LocalDate fechaEntrada;
 
     @NotNull(message = "La fecha de salida es requerida")
+    @FutureOrPresent(message = "La fecha de salida no puede ser pasada")
     @Column(name="FECHA_SALIDA", nullable = false)
     private LocalDate fechaSalida;
 
@@ -58,13 +60,14 @@ public class Reserva {
 
     @NotNull(message = "El monto total es requerido")
     @Column(name="MONTO_TOTAL", nullable = false)
-    private Double montoTotal;
+    private BigDecimal montoTotal;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "El estado de la reserva es requerido")
     @Column(name="ESTADO", nullable = false, length = 20)
     private EstadoReserva estado;
-
+    
+   
     @Column(name="FECHA_CREACION", insertable = false, updatable = false)
     private LocalDateTime fechaCreacion;
 }

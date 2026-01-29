@@ -2,6 +2,7 @@ package com.example.demo.dto;
 
 
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -12,7 +13,7 @@ public record ReservaResponse(
         LocalDate fechaEntrada,
         LocalDate fechaSalida,
         Integer cantNoches,
-        Double montoTotal,
+        BigDecimal montoTotal,
         String estado,
         LocalDateTime fechaCreacion
 ) {

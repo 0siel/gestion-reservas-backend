@@ -14,8 +14,8 @@ import java.util.List;
 @FeignClient(name = "msv.habitaciones")
 public interface HabitacionClient {
 
-	@GetMapping("/")
-	List<HabitacionResponse> listarHabitaciones();
+	//@GetMapping("/")
+	//List<HabitacionResponse> listarHabitaciones();
 
 	@GetMapping("/{id}")
 	HabitacionResponse obtenerHabitacionPorId(@PathVariable Long id);
