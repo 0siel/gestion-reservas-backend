@@ -92,7 +92,7 @@ public class ReservaServiceImpl implements ReservaService {
 	}
 	
 	private Reserva getEntityOrThrow(Long id) {
-        return reservaRepository.findByIdAndEstadoRegistro(id, EstadoRegistro.ACTIVO) 
+        return reservaRepository.findByIdAndEstado(id, EstadoRegistro.ACTIVO) 
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada con ID: " + id));
 
 }

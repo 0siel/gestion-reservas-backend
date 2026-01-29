@@ -10,6 +10,6 @@ import msv_reservas.entities.Reserva;
 
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 	
-Optional<Reserva> findByIdAndEstadoRegistro(Long id, EstadoRegistro estadoRegistro);
+Optional<Reserva> findByIdAndEstado(Long id, EstadoRegistro estadoRegistro);
 
 }
