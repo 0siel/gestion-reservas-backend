@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.exceptions.HabitacionNoDisponibleException;
 import com.example.demo.exceptions.RecursoDuplicadoException;
 import com.example.demo.exceptions.RecursoNoEncontradoException;
 import org.springframework.http.HttpStatus;
@@ -64,6 +65,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleJsonErrors(HttpMessageNotReadableException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, "Formato JSON Inválido", 
                 "El cuerpo de la petición no es válido. Verifique los tipos de datos y los valores de los Enums (ej. Nacionalidad).");
+    }
+    
+ // Manejo para cuando la habitación está ocupada/mantenimiento
+    @ExceptionHandler(HabitacionNoDisponibleException.class)
+    public ResponseEntity<Map<String, Object>> handleHabitacionNoDisponible(HabitacionNoDisponibleException ex) {
+        return buildResponse(HttpStatus.CONFLICT, "Conflicto de Disponibilidad", ex.getMessage());
     }
 
     // -------------------------------------------------------------------

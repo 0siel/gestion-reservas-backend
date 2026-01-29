@@ -95,6 +95,16 @@ public class HuespedServiceImpl implements HuespedService {
             throw new RecursoDuplicadoException("El documento " + request.documento() + " ya se encuentra registrado.");
         }
     }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public HuespedResponse obtenerPorIdSinEstado(Long id) {
+        // Busca por ID puro (ignora si está ELIMINADO o ACTIVO)
+        Huesped huesped = huespedRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Huésped no encontrado en registros históricos con ID: " + id));
+        
+        return mapper.entityToResponse(huesped);
+    }
 
     private Huesped getEntityOrThrow(Long id) {
         return huespedRepository.findByIdAndEstadoRegistro(id, EstadoRegistro.ACTIVO)

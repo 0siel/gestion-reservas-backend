@@ -21,10 +21,10 @@ public class HabitacionMapper implements CommonMapper<HabitacionRequest, Habitac
         return new HabitacionResponse(
             entity.getId(),
             entity.getNumero(),
-            entity.getTipo().getDescripcion(),
+            entity.getTipo().name(),
             entity.getPrecioNoche(),
             entity.getCapacidad(),
-            entity.getEstado().getDescripcion()
+            entity.getEstado().name()
         );
     }
 
