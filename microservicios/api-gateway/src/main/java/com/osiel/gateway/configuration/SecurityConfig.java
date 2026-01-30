@@ -18,7 +18,6 @@ public class SecurityConfig {
 	@Bean
 	SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 		
-		/*
 		http.csrf(csrf -> csrf.disable())
 			.cors(cors -> cors.configurationSource(request -> {
 				CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -28,36 +27,15 @@ public class SecurityConfig {
 				corsConfiguration.setAllowCredentials(true);
 				return corsConfiguration;
 			})).authorizeExchange(exchange -> exchange
-					
 					.pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 					.pathMatchers(HttpMethod.GET, "/**").hasAnyRole("ADMIN", "USER")
 					.pathMatchers(HttpMethod.POST, "/**").hasAnyRole("ADMIN", "USER")
 					.pathMatchers(HttpMethod.PUT, "/**").hasAnyRole("ADMIN", "USER")
 					.pathMatchers(HttpMethod.PATCH, "/**").hasAnyRole("ADMIN", "USER")
 					.pathMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
-					.anyExchange().authenticated());
-		*/
-		
-			
-			/* 		
+					.anyExchange().authenticated())
 			.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
 				jwt.jwtAuthenticationConverter(reactiveJwtAuthenticationConverterAdapter())));
-			*/
-	
-		http
-        .csrf(csrf -> csrf.disable())
-        .cors(cors -> cors.configurationSource(request -> {
-            CorsConfiguration corsConfiguration = new CorsConfiguration();
-            corsConfiguration.setAllowedOriginPatterns(List.of("*")); // 🔓 todos los orígenes
-            corsConfiguration.setAllowedMethods(List.of("*"));
-            corsConfiguration.setAllowedHeaders(List.of("*"));
-            corsConfiguration.setAllowCredentials(false); // IMPORTANTE con "*"
-            return corsConfiguration;
-        }))
-        .authorizeExchange(exchange -> exchange
-            .anyExchange().permitAll() // 🔓 TODO permitido
-        );
-			
 		
 		return http.build();
 	}
