@@ -153,6 +153,7 @@ public class ReservaServiceImpl implements ReservaService {
     @Override
     @Transactional(readOnly = true)
     public boolean tieneReservasActivasHuesped(Long idHuesped) {
+    	log.info("Validando usuario para eliminar");
         List<EstadoReserva> estadosActivos = List.of(EstadoReserva.CONFIRMADA, EstadoReserva.EN_CURSO);
         return reservaRepository.existsByIdHuespedAndEstadoInAndEstadoRegistro(idHuesped, estadosActivos, EstadoRegistro.ACTIVO);
     }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "msv-reservas")
 public interface ReservaClient {
 
-    @GetMapping("/reservas/check-huesped/{id}")
+    @GetMapping("/check-huesped/{id}")
     boolean tieneReservasHuesped(@PathVariable("id") Long id);
 
     @GetMapping("/reservas/check-habitacion/{id}")
