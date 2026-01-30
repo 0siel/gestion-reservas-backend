@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 public record ReservaResponse(
         Long id,
-        Long idHuesped,
-        Long idHabitacion,
+        HuespedResponse huesped,
+        HabitacionResponse habitacion,
         LocalDate fechaEntrada,
         LocalDate fechaSalida,
         Integer cantNoches,

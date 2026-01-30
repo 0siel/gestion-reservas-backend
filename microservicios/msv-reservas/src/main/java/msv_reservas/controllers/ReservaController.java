@@ -22,9 +22,6 @@ public class ReservaController extends CommonController<ReservaRequest, ReservaR
 		super(service);
 		
 	}
-
-	
- 
  
  @PutMapping("/{id}/estado/{idStatusReserva}")
  public  ResponseEntity<ReservaResponse> actualizarStatus(

@@ -10,6 +10,6 @@ public interface ReservaClient {
     @GetMapping("/check-huesped/{id}")
     boolean tieneReservasHuesped(@PathVariable("id") Long id);
 
-    @GetMapping("/reservas/check-habitacion/{id}")
+    @GetMapping("/check-habitacion/{id}")
     boolean tieneReservasHabitacion(@PathVariable("id") Long id);
 }

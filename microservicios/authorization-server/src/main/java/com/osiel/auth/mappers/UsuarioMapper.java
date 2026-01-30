@@ -19,6 +19,7 @@ public class UsuarioMapper {
 	public UsuarioResponse entityToResponse(Usuario usuario) {
 		if (usuario == null) return null;
 		return new UsuarioResponse(
+				usuario.getId(),
 				usuario.getUsername(),
 				usuario.getRoles().stream()
 					.map(Rol::getNombre).collect(Collectors.toSet())

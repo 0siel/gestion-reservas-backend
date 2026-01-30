@@ -117,16 +117,28 @@ public class ReservaServiceImpl implements ReservaService {
     @Transactional
     public void eliminar(Long id) {
         Reserva reserva = getEntityOrThrow(id);
-        log.warn("Eliminando lógicamente la reserva ID: {}", id);
-        
-        // --- LOGICA AGREGADA: LIBERAR HABITACIÓN ---
-        // Si borramos la reserva, la habitación debe quedar libre
-        if (reserva.getEstado() != EstadoReserva.FINALIZADA && reserva.getEstado() != EstadoReserva.CANCELADA) {
-             liberarHabitacion(reserva.getIdHabitacion());
+
+        // --- VALIDACIÓN NUEVA ---
+        // Solo permitir eliminar si está CONFIRMADA.
+        // Si ya hicieron Check-in (EN_CURSO) o ya terminó (FINALIZADA), no se toca.
+        if (!EstadoReserva.CONFIRMADA.equals(reserva.getEstado())) {
+            throw new IllegalStateException(
+                "Solo se pueden eliminar reservas que estén en estado CONFIRMADA. " +
+                "El estado actual es: " + reserva.getEstado()
+            );
         }
 
+        log.warn("Eliminando lógicamente la reserva ID: {}", id);
+        
+        // Como validamos que está CONFIRMADA, sabemos que la habitación estaba apartada (OCUPADA).
+        // Por lo tanto, es OBLIGATORIO liberarla al eliminar la reserva.
+        liberarHabitacion(reserva.getIdHabitacion());
+
+        // Borrado Lógico
         reserva.setEstadoRegistro(EstadoRegistro.ELIMINADO);
-        // Opcional: También podrías marcarla como CANCELADA para el negocio
+        
+        // Para consistencia de negocio, también la marcamos como CANCELADA
+        // así si alguien consulta el histórico de borrados, sabe que no procedió.
         reserva.setEstado(EstadoReserva.CANCELADA); 
         
         reservaRepository.save(reserva);
