@@ -67,9 +67,19 @@ public class HabitacionServiceImpl implements HabitacionService {
     public HabitacionResponse actualizar(HabitacionRequest request, Long id) {
         Habitacion habitacion = getOrThrow(id);
         
-        // Si cambia el número, validamos colisión
+        // 1. Validar Unicidad de número
         if (!habitacion.getNumero().equalsIgnoreCase(request.numero())) {
             validarUnicidad(request.numero(), id);
+        }
+
+        // --- VALIDACIÓN NUEVA ---
+        // Si el request intenta cambiar el estado, verificamos si es válido
+        if (request.idEstado() != null) {
+            EstadoHabitacion nuevoEstado = EstadoHabitacion.fromCodigo(request.idEstado());
+            // Si el estado es diferente al actual, validamos si hay reservas
+            if (habitacion.getEstado() != nuevoEstado) {
+                validarCambioEstadoPermitido(id, nuevoEstado);
+            }
         }
 
         Habitacion actualizada = mapper.updateEntityFromRequest(request, habitacion);
@@ -83,7 +93,15 @@ public class HabitacionServiceImpl implements HabitacionService {
     public void eliminar(Long id) {
         Habitacion habitacion = getOrThrow(id);
         
-        // 2. VALIDACIÓN: ¿Está reservada?
+        // 1. VALIDACIÓN LOCAL: ¿El estado físico permite borrarla?
+        // Solo permitimos borrar si está DISPONIBLE. Si está SUCIA, MANTENIMIENTO u OCUPADA, se rechaza.
+        if (habitacion.getEstado() != EstadoHabitacion.DISPONIBLE) {
+             throw new IllegalStateException(
+                 "No se puede eliminar la habitación. Solo se permiten eliminar habitaciones con estado DISPONIBLE. Estado actual: " + habitacion.getEstado()
+             );
+        }
+
+        // 2. VALIDACIÓN EXTERNA: ¿Tiene reservas futuras/activas?
         boolean tieneReservas = reservaClient.tieneReservasHabitacion(id);
         
         if (tieneReservas) {
@@ -109,11 +127,10 @@ public class HabitacionServiceImpl implements HabitacionService {
     @Override
     @Transactional
     public void cambiarEstado(Long id, String nuevoEstado) {
-        Habitacion habitacion = getOrThrow(id); // Usa tu método privado existente
+        Habitacion habitacion = getOrThrow(id);
         
         try {
-            // Asegúrate de importar tu Enum EstadoHabitacion
-            // Convertimos el String "OCUPADA" al Enum
+            
             EstadoHabitacion estadoEnum = EstadoHabitacion.valueOf(nuevoEstado.toUpperCase());
             
             habitacion.setEstado(estadoEnum);
@@ -124,11 +141,29 @@ public class HabitacionServiceImpl implements HabitacionService {
             throw new IllegalArgumentException("El estado '" + nuevoEstado + "' no es válido.");
         }
     }
+    
     // --- HELPERS ---
 
     private Habitacion getOrThrow(Long id) {
         return repository.findByIdAndEstadoRegistro(id, EstadoRegistro.ACTIVO)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Habitación no encontrada o inactiva con ID: " + id));
+    }
+    
+    private void validarCambioEstadoPermitido(Long idHabitacion, EstadoHabitacion nuevoEstado) {
+        
+        boolean tieneReservas = reservaClient.tieneReservasHabitacion(idHabitacion);
+
+        if (tieneReservas) {
+            
+            
+            if (nuevoEstado != EstadoHabitacion.OCUPADA) {
+                throw new RecursoEnUsoException(
+                    "No se puede cambiar el estado a " + nuevoEstado + 
+                    " porque la habitación tiene una RESERVA ACTIVA. El estado debe mantenerse como OCUPADA."
+                );
+            }
+        }
+        
     }
 
     private void validarUnicidad(String numero, Long id) {
