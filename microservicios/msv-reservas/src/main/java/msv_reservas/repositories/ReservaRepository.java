@@ -1,6 +1,8 @@
 package msv_reservas.repositories;
 
 import com.example.demo.enums.EstadoRegistro;
+import com.example.demo.enums.EstadoReserva;
+
 import msv_reservas.entities.Reserva;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
@@ -13,4 +15,13 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     
     // Buscar por ID asegurando que esté ACTIVO
     Optional<Reserva> findByIdAndEstadoRegistro(Long id, EstadoRegistro estadoRegistro);
+    
+    boolean existsByIdHuespedAndEstadoInAndEstadoRegistro(
+            Long idHuesped, List<EstadoReserva> estados, EstadoRegistro estadoRegistro
+        );
+
+        // Verifica si existen reservas activas para una habitación
+    boolean existsByIdHabitacionAndEstadoInAndEstadoRegistro(
+    		Long idHabitacion, List<EstadoReserva> estados, EstadoRegistro estadoRegistro
+        );
 }

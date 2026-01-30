@@ -8,4 +8,7 @@ public interface ReservaService extends CrudService<ReservaRequest, ReservaRespo
 
 	public ReservaResponse actualizarStatus(Long idReserva, Long idStatusReserva);
 	
+	boolean tieneReservasActivasHuesped(Long idHuesped);
+	boolean tieneReservasActivasHabitacion(Long idHabitacion);
+	
 }

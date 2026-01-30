@@ -6,11 +6,13 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.clients.ReservaClient;
 import com.example.demo.dto.HabitacionRequest;
 import com.example.demo.dto.HabitacionResponse;
 import com.example.demo.enums.EstadoHabitacion;
 import com.example.demo.enums.EstadoRegistro;
 import com.example.demo.exceptions.RecursoDuplicadoException;
+import com.example.demo.exceptions.RecursoEnUsoException;
 import com.example.demo.exceptions.RecursoNoEncontradoException;
 
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,8 @@ public class HabitacionServiceImpl implements HabitacionService {
 
     private final HabitacionRepository repository;
     private final HabitacionMapper mapper;
+
+    private final ReservaClient reservaClient;
 
     // --- MÉTODOS HEREDADOS DE CRUDSERVICE ---
 
@@ -72,13 +76,21 @@ public class HabitacionServiceImpl implements HabitacionService {
         return mapper.entityToResponse(repository.save(actualizada));
     }
 
+ 
+
     @Override
     @Transactional
     public void eliminar(Long id) {
         Habitacion habitacion = getOrThrow(id);
-        log.warn("Eliminando lógicamente habitación ID: {}", id);
         
-        // Borrado Lógico (Override del comportamiento estándar)
+        // 2. VALIDACIÓN: ¿Está reservada?
+        boolean tieneReservas = reservaClient.tieneReservasHabitacion(id);
+        
+        if (tieneReservas) {
+            throw new RecursoEnUsoException("No se puede eliminar la habitación porque tiene reservas CONFIRMADAS o EN CURSO pendientes.");
+        }
+        
+        log.warn("Eliminando lógicamente habitación: {}", id);
         habitacion.setEstadoRegistro(EstadoRegistro.ELIMINADO);
         repository.save(habitacion);
     }

@@ -1,5 +1,6 @@
 package msv_reservas.controllers;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +32,16 @@ public class ReservaController extends CommonController<ReservaRequest, ReservaR
          @PathVariable Long idStatusReserva) {
 
     return ResponseEntity.ok(service.actualizarStatus(id, idStatusReserva));
+ }
+ 
+ @GetMapping("/check-huesped/{id}")
+ public ResponseEntity<Boolean> verificarReservasHuesped(@PathVariable Long id) {
+     return ResponseEntity.ok(service.tieneReservasActivasHuesped(id));
+ }
+
+ @GetMapping("/check-habitacion/{id}")
+ public ResponseEntity<Boolean> verificarReservasHabitacion(@PathVariable Long id) {
+     return ResponseEntity.ok(service.tieneReservasActivasHabitacion(id));
  }
 
  

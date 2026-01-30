@@ -149,6 +149,20 @@ public class ReservaServiceImpl implements ReservaService {
         reservaActual.setEstado(nuevoEstado);
         return mapper.entityToResponse(reservaRepository.save(reservaActual));
     }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public boolean tieneReservasActivasHuesped(Long idHuesped) {
+        List<EstadoReserva> estadosActivos = List.of(EstadoReserva.CONFIRMADA, EstadoReserva.EN_CURSO);
+        return reservaRepository.existsByIdHuespedAndEstadoInAndEstadoRegistro(idHuesped, estadosActivos, EstadoRegistro.ACTIVO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean tieneReservasActivasHabitacion(Long idHabitacion) {
+        List<EstadoReserva> estadosActivos = List.of(EstadoReserva.CONFIRMADA, EstadoReserva.EN_CURSO);
+        return reservaRepository.existsByIdHabitacionAndEstadoInAndEstadoRegistro(idHabitacion, estadosActivos, EstadoRegistro.ACTIVO);
+    }
 
     // --- MÉTODOS DE APOYO ---
 
