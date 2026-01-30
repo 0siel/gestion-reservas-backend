@@ -14,26 +14,9 @@ import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 public class SecurityConfig {
+	
 	@Bean
 	SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-<<<<<<< HEAD
-
-		http.csrf(csrf -> csrf.disable()).cors(cors -> cors.configurationSource(request -> {
-			CorsConfiguration corsConfiguration = new CorsConfiguration();
-			corsConfiguration.setAllowedOrigins(List.of("http://localhost:4200"));
-			corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-			corsConfiguration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-			corsConfiguration.setAllowCredentials(true);
-			return corsConfiguration;
-		})).authorizeExchange(exchange -> exchange.pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-				.pathMatchers(HttpMethod.GET, "/**").hasAnyRole("ADMIN", "USER").pathMatchers(HttpMethod.POST, "/**")
-				.hasAnyRole("ADMIN", "USER").pathMatchers(HttpMethod.PUT, "/**").hasAnyRole("ADMIN", "USER")
-				.pathMatchers(HttpMethod.PATCH, "/**").hasAnyRole("ADMIN", "USER")
-				.pathMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN").anyExchange().authenticated())
-				.oauth2ResourceServer(oauth2 -> oauth2
-						.jwt(jwt -> jwt.jwtAuthenticationConverter(reactiveJwtAuthenticationConverterAdapter())));
-
-=======
 		
 		/*
 		http.csrf(csrf -> csrf.disable())
@@ -76,18 +59,18 @@ public class SecurityConfig {
         );
 			
 		
->>>>>>> e9abfac36bd779c12183b2e08a7c8d1d065bbd4f
 		return http.build();
 	}
-
+	
 	@Bean
 	ReactiveJwtAuthenticationConverterAdapter reactiveJwtAuthenticationConverterAdapter() {
 		JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 		jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
 		jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
-
+		
 		JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
 		jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
 		return new ReactiveJwtAuthenticationConverterAdapter(jwtAuthenticationConverter);
 	}
+
 }

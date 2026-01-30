@@ -1,47 +1,40 @@
-server:
-  port: 8090 # Puerto estándar para Gateway
-
 spring:
   application:
-    name:  api-gateway
+    name: api-gateway
 
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:9000/oauth2/jwks
+          jwk-set-uri: http://localhost:9000/oauth2/jwks      
 
   cloud:
     loadbalancer:
       enabled: true
 
     gateway:
-      server:
-        webflux:
-          routes:
-            - id: msv-habitacion
-              uri: lb://msv-habitacion
-              predicates:
-                - Path=/api/habitacion/**
-              filters:
-                - StripPrefix=2
+      routes:
+        - id: msv-pacientes2
+          uri: lb://msv-pacientes2
+          predicates:
+            - Path=/api/pacientes/**
+          filters:
+            - StripPrefix=2
 
-            - id: msv-huespedes
-              uri: lb://msv-huespedes
-              predicates:
-                - Path=/api/huespedes/**
-              filters:
-                - StripPrefix=2
+        - id: msv-medicos
+          uri: lb://msv-medicos
+          predicates:
+            - Path=/api/medicos/**
+          filters:
+            - StripPrefix=2
 
-            - id: msv-reserva
-              uri: lb://msv-reserva
-              predicates:
-                - Path=/api/reserva/**
-              filters:
-                - StripPrefix=2
+        - id: msv-citas
+          uri: lb://msv-citas
+          predicates:
+            - Path=/api/citas/**
+          filters:
+            - StripPrefix=2
 
-<<<<<<< HEAD
-=======
         - id: msv-huespedes
           uri: lb://msv-huespedes
           predicates:
@@ -64,10 +57,10 @@ spring:
             - StripPrefix=2
 server:
   port: 8090
->>>>>>> e9abfac36bd779c12183b2e08a7c8d1d065bbd4f
 eureka:
-  instance:
-    instance-id: ${spring.application.name}:${random.value}
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
