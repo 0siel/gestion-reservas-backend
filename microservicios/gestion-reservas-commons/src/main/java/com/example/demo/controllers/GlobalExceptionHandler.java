@@ -1,152 +1,101 @@
 package com.example.demo.controllers;
 
-
-
-import com.example.demo.dto.ErrorResponse;
-import com.example.demo.exceptions.EntidadRelacionadaException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-
-import feign.FeignException;
-import feign.RetryableException;
-import jakarta.validation.ConstraintViolationException;
-import lombok.extern.slf4j.Slf4j;
+import com.example.demo.exceptions.HabitacionNoDisponibleException;
+import com.example.demo.exceptions.RecursoDuplicadoException;
+import com.example.demo.exceptions.RecursoEnUsoException;
+import com.example.demo.exceptions.RecursoNoEncontradoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 @RestControllerAdvice
-@Slf4j
 public class GlobalExceptionHandler {
 
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {
-        log.error("Violación de restricción: {}", e.getMessage());
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Violación de restricción: " + e.getMessage()));
+    // -------------------------------------------------------------------
+    // 1. Manejo de CONFLICTO (409) - Duplicidad de datos
+    // -------------------------------------------------------------------
+    @ExceptionHandler(RecursoDuplicadoException.class)
+    public ResponseEntity<Map<String, Object>> handleRecursoDuplicado(RecursoDuplicadoException ex) {
+        return buildResponse(HttpStatus.CONFLICT, "Conflicto de Datos", ex.getMessage());
     }
 
+    // -------------------------------------------------------------------
+    // 2. Manejo de NO ENCONTRADO (404) - ID inexistente o borrado lógico
+    // -------------------------------------------------------------------
+    @ExceptionHandler(RecursoNoEncontradoException.class)
+    public ResponseEntity<Map<String, Object>> handleRecursoNoEncontrado(RecursoNoEncontradoException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, "Recurso No Encontrado", ex.getMessage());
+    }
+
+    // -------------------------------------------------------------------
+    // 3. Manejo de VALIDACIONES DE CAMPOS (400) - @NotNull, @Email, etc.
+    // -------------------------------------------------------------------
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        String mensaje = e.getBindingResult().getFieldErrors().stream()
-                .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .findFirst()
-                .orElse("Error de validación en los datos enviados");
-        log.error("Error de validación de argumentos: {}", mensaje);
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), mensaje));
+    public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        
+        // Extraemos campo por campo para decir exactamente qué falló
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("error", "Error de Validación");
+        response.put("detalles", errors); // Devuelve un mapa detallado
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
-        log.error("Error en la petición: {}", e.getMessage());
-        return ResponseEntity.badRequest().body(
-                new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage())
-        );
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ErrorResponse> handleNoSuchElementException(NoSuchElementException e) {
-        log.warn("No se encontró recurso: {}", e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage())
-        );
-    }
-
-    @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(NoResourceFoundException e) {
-        log.warn("No se encontró el recurso: {}", e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage())
-        );
-    }
-
-    @ExceptionHandler(EntidadRelacionadaException.class)
-    public ResponseEntity<ErrorResponse> handleEntidadRelacionadaException(EntidadRelacionadaException e) {
-        log.warn("Error al eliminar un recurso: {}", e.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage())
-        );
-    }
-    
-    @ExceptionHandler(FeignException.class)
-    public ResponseEntity<ErrorResponse> handleGenericFeignException(FeignException e) {
-        log.error("Error en la comunicación Feign: " + e.getMessage());
-
-        int status = e.status() > 0 ? e.status() : HttpStatus.INTERNAL_SERVER_ERROR.value();
-        String message = switch (status) {
-            case 400 -> "Solicitud incorrecta al servicio remoto.";
-            case 401 -> "No autorizado para acceder al servicio remoto.";
-            case 403 -> "Acceso prohibido al servicio remoto.";
-            case 404 -> "Recurso no encontrado en el servicio remoto.";
-            case 503 -> "Servicio remoto no disponible.";
-            default -> "Error al comunicarse con el servicio remoto.";
-        };
-        ErrorResponse response = new ErrorResponse(status, message);
-
-        return ResponseEntity.status(status).body(response);
-    }
-    
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage()));
-    }
-    
-    @ExceptionHandler(RetryableException.class)
-    public ResponseEntity<ErrorResponse> handleRetryable(RetryableException e) {
-    	log.error("Servicio remoto no disponible o no responde: " + e.getMessage());
-    	ErrorResponse response = new ErrorResponse(HttpStatus.SERVICE_UNAVAILABLE.value(),
-    			"Servicio remoto no disponible o no respond");
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception e) {
-        log.error("Error interno del servidor: {}", e.getMessage(), e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                        e.getMessage() == null ? e.getCause().toString() : e.getMessage())
-        );
-    }
-
-
-
-
+    // -------------------------------------------------------------------
+    // 4. Manejo de ERROR DE FORMATO JSON (400) - Enums inválidos
+    // -------------------------------------------------------------------
+    // Esto pasa si envían "nacionalidad": "MARTE" y no existe en el Enum
     @ExceptionHandler(HttpMessageNotReadableException.class)
-        public ResponseEntity<Map<String, Object>> handleJsonError(HttpMessageNotReadableException ex) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("timestamp", LocalDateTime.now());
-            response.put("codigo", HttpStatus.BAD_REQUEST.value());
+    public ResponseEntity<Map<String, Object>> handleJsonErrors(HttpMessageNotReadableException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, "Formato JSON Inválido", 
+                "El cuerpo de la petición no es válido. Verifique los tipos de datos y los valores de los Enums (ej. Nacionalidad).");
+    }
+    
+    @ExceptionHandler(RecursoEnUsoException.class)
+    public ResponseEntity<Map<String, Object>> handleRecursoEnUso(RecursoEnUsoException ex) {
+        return buildResponse(HttpStatus.CONFLICT, "No se puede eliminar el recurso", ex.getMessage());
+    }
+    
+ // Manejo para cuando la habitación está ocupada/mantenimiento
+    @ExceptionHandler(HabitacionNoDisponibleException.class)
+    public ResponseEntity<Map<String, Object>> handleHabitacionNoDisponible(HabitacionNoDisponibleException ex) {
+        return buildResponse(HttpStatus.CONFLICT, "Conflicto de Disponibilidad", ex.getMessage());
+    }
 
-            String mensaje = "Error en el formato del JSON: ";
+    // -------------------------------------------------------------------
+    // 5. Manejo de ERROR INTERNO (500) - Fallos inesperados
+    // -------------------------------------------------------------------
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleGlobalException(Exception ex) {
+        ex.printStackTrace(); // Importante para ver el error real en los logs del servidor
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error Interno del Servidor", 
+                "Ocurrió un error inesperado. Contacte al administrador.");
+    }
 
-           
-            if (ex.getCause() instanceof InvalidFormatException ife) {
-                String campo = ife.getPath().get(0).getFieldName();
-                mensaje += "El valor '" + ife.getValue() + "' no es válido para el campo '" + campo + "'.";
-            } else if (ex.getCause() instanceof MismatchedInputException mie) {
-                String campo = mie.getPath().isEmpty() ? "desconocido" : mie.getPath().get(0).getFieldName();
-                mensaje += "El tipo de dato para el campo '" + campo + "' es incorrecto.";
-            } else {
-                mensaje += "Asegúrate de que el JSON esté bien formado y los tipos de datos sean correctos.";
-            }
-
-            response.put("mensaje", mensaje);
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-
-
+    // Método helper para construir la respuesta JSON estándar
+    private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String error, String mensaje) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", status.value());
+        response.put("error", error);
+        response.put("mensaje", mensaje);
+        return new ResponseEntity<>(response, status);
+    }
 }

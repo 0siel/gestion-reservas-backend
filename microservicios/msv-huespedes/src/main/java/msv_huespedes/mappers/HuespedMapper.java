@@ -23,9 +23,7 @@ public class HuespedMapper implements CommonMapper<HuespedRequest, HuespedRespon
                 entity.getApellidoMaterno(),
                 entity.getEmail(),
                 entity.getTelefono(),
-                entity.getDocumento(),
-                entity.getNacionalidad(), // Enum Nacionalidad
-                entity.getEstadoRegistro() // Enum EstadoRegistro
+                entity.getDocumento()// Enum EstadoRegistro
         );
     }
 

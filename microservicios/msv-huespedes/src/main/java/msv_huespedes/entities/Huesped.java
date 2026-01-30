@@ -43,7 +43,7 @@ public class Huesped {
 
     @NotBlank(message = "El email es requerido")
     @Email
-    @Column(name="EMAIL", nullable = false, unique = true, length = 150)
+    @Column(name="EMAIL", nullable = false, length = 150)
     private String email;
 
     @NotBlank(message = "El teléfono es requerido")
@@ -52,7 +52,7 @@ public class Huesped {
     private String telefono;
 
     @NotBlank(message = "El documento es requerido")
-    @Column(name="DOCUMENTO", nullable = false, unique = true, length = 50)
+    @Column(name="DOCUMENTO", nullable = false, length = 50)
     private String documento;
 
     @NotNull(message = "La nacionalidad es requerida") // Cambiamos NotBlank por NotNull para Enums

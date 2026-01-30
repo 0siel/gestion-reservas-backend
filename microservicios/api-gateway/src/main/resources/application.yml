@@ -40,6 +40,31 @@ spring:
               filters:
                 - StripPrefix=2
 
+<<<<<<< HEAD
+=======
+        - id: msv-huespedes
+          uri: lb://msv-huespedes
+          predicates:
+            - Path=/api/huespedes/**
+          filters:
+            - StripPrefix=2
+
+        - id: msv.habitaciones
+          uri: lb://msv.habitaciones
+          predicates:
+            - Path=/api/habitaciones/**
+          filters:
+            - StripPrefix=2
+
+        - id: msv-reservas
+          uri: lb://msv-reservas
+          predicates:
+            - Path=/api/reservas/**
+          filters:
+            - StripPrefix=2
+server:
+  port: 8090
+>>>>>>> e9abfac36bd779c12183b2e08a7c8d1d065bbd4f
 eureka:
   instance:
     instance-id: ${spring.application.name}:${random.value}
