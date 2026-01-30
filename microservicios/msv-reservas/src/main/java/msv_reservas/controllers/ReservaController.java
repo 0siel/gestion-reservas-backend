@@ -25,7 +25,7 @@ public class ReservaController extends CommonController<ReservaRequest, ReservaR
 
 	
  
- //EndPonint para el estado de la reserva 
+ 
  @PutMapping("/{id}/estado/{idStatusReserva}")
  public  ResponseEntity<ReservaResponse> actualizarStatus(
          @PathVariable Long id,
@@ -43,9 +43,16 @@ public class ReservaController extends CommonController<ReservaRequest, ReservaR
  public ResponseEntity<Boolean> verificarReservasHabitacion(@PathVariable Long id) {
      return ResponseEntity.ok(service.tieneReservasActivasHabitacion(id));
  }
+ 
+ @PutMapping("/{id}/check-in")
+ public ResponseEntity<ReservaResponse> checkIn(@PathVariable Long id) {
+     return ResponseEntity.ok(service.realizarCheckIn(id));
+ }
 
  
- 
-
+ @PutMapping("/{id}/check-out")
+ public ResponseEntity<ReservaResponse> checkOut(@PathVariable Long id) {
+     return ResponseEntity.ok(service.realizarCheckOut(id));
+ }
 
 }

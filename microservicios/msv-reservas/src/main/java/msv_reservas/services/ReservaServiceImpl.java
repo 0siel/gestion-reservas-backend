@@ -163,6 +163,55 @@ public class ReservaServiceImpl implements ReservaService {
         List<EstadoReserva> estadosActivos = List.of(EstadoReserva.CONFIRMADA, EstadoReserva.EN_CURSO);
         return reservaRepository.existsByIdHabitacionAndEstadoInAndEstadoRegistro(idHabitacion, estadosActivos, EstadoRegistro.ACTIVO);
     }
+    
+    @Override
+    @Transactional
+    public ReservaResponse realizarCheckIn(Long idReserva) {
+        Reserva reserva = getEntityOrThrow(idReserva);
+        
+        log.info("Procesando Check-in para reserva ID: {}", idReserva);
+
+        // REGLA: Solo se puede hacer Check-in si está CONFIRMADA
+        if (!EstadoReserva.CONFIRMADA.equals(reserva.getEstado())) {
+            throw new IllegalStateException("El Check-in solo se puede realizar sobre reservas CONFIRMADAS. Estado actual: " + reserva.getEstado());
+        }
+
+        // Cambio de estado
+        reserva.setEstado(EstadoReserva.EN_CURSO);
+        
+        // Opcional: Podrías validar aquí si la fecha actual coincide con fechaEntrada
+        // if (!LocalDate.now().equals(reserva.getFechaEntrada())) { ... }
+
+        return mapper.entityToResponse(reservaRepository.save(reserva));
+    }
+
+    @Override
+    @Transactional
+    public ReservaResponse realizarCheckOut(Long idReserva) {
+        Reserva reserva = getEntityOrThrow(idReserva);
+        
+        log.info("Procesando Check-out para reserva ID: {}", idReserva);
+
+        // REGLA: "No se puede hacer check-out antes de hacer check-in"
+        // Esto se cumple validando que el estado actual sea EN_CURSO
+        if (!EstadoReserva.EN_CURSO.equals(reserva.getEstado())) {
+            throw new IllegalStateException("El Check-out solo aplica a reservas EN CURSO (Check-in ya realizado). Estado actual: " + reserva.getEstado());
+        }
+
+        // 1. Cambiar estado de la reserva
+        reserva.setEstado(EstadoReserva.FINALIZADA);
+        
+        // 2. REGLA: La habitación cambia a DISPONIBLE
+        try {
+            habitacionClient.cambiarEstadoHabitacion(reserva.getIdHabitacion(), HABITACION_DISPONIBLE);
+            log.info("Habitación {} liberada por Check-out", reserva.getIdHabitacion());
+        } catch (Exception e) {
+            // Si falla la comunicación con Habitaciones, hacemos rollback para no dejar inconsistencia
+            throw new RuntimeException("Error al liberar la habitación durante el Check-out. Intente nuevamente.");
+        }
+
+        return mapper.entityToResponse(reservaRepository.save(reserva));
+    }
 
     // --- MÉTODOS DE APOYO ---
 
